@@ -1,0 +1,87 @@
+/* File: css/styles.css */
+
+/* General Reset & Typography */
+body {
+    font-family: "Segoe UI", Roboto, sans-serif;
+    background-color: #f8f9fa;
+    margin-top: 70px;
+  }
+  
+  /* Headings */
+  h1, h2, h3, h4, h5 {
+    font-weight: 600;
+  }
+  
+  /* Navbar Custom */
+  .navbar-brand {
+    font-weight: bold;
+    font-size: 1.4rem;
+  }
+  
+  /* Cards */
+  .card {
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .card .display-4 {
+    font-weight: 700;
+  }
+  
+  /* Buttons */
+  .btn {
+    font-weight: 500;
+  }
+  
+  /* Modals */
+  .modal-title {
+    font-weight: 600;
+  }
+  
+  .modal-footer .btn + .btn {
+    margin-left: 10px;
+  }
+  
+  /* Quick Actions buttons */
+  #btn-new-course,
+  #btn-add-students,
+  #btn-create-team,
+  #btn-create-review,
+  #btn-schedule-review {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+
+  .visually-hidden-focusable {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  
+  .visually-hidden-focusable:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 1rem;
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  /* Table captions for accessibility */
+  caption {
+    caption-side: top;
+    font-weight: 500;
+    color: #6c757d;
+  }
+  

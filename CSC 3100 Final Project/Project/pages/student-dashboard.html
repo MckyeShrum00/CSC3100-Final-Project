@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SwollenHippo - Student Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/pulse/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#6f42c1">
+  <meta name="description" content="SwollenHippo - Peer Review System for Academic Courses">
+  <!-- Add to home screen for iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="SwollenHippo">
+  <link rel="apple-touch-icon" href="../images/icons/icon-152x152.png">
+  <!-- Add custom styles -->
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<!-- jQuery + Bootstrap + SweetAlert2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="../js/app.js"></script>
+<script src="../js/reviews.js"></script>
+
+
+<body>
+  <!-- Skip to main content for screen readers -->
+  <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" aria-label="Main navigation">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">SwollenHippo</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="" aria-current="page">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="nav-courses">Review Feedback</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="nav-teams">Team Information</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
+              <span id="user-name">Admin User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#" id="nav-profile">Profile</a></li>
+              <li><a class="dropdown-item" href="#" id="nav-settings">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="../index.html" id="nav-logout">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content" class="container-fluid mt-5 pt-3">
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" class="row">
+      <div class="col-12 mt-4">
+        <h1>Student Dashboard</h1>
+        <p>Welcome to the SwollenHippo student dashboard. Manage your reviews, feedback and team information here.</p>
+      </div>
+
+      <!-- Upcoming Reviews -->
+      <div class="col-12 mb-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Upcoming Reviews</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <caption>List of upcoming peer reviews</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Course</th>
+                    <th scope="col">Review Type</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>CS 101</td>
+                    <td>Mid-Project</td>
+                    <td>May 8, 2025</td>
+                    <td><span class="badge bg-warning">Upcoming</span></td>
+                    <td>
+                      <div class="btn-group" role="group" aria-label="Review actions">
+                        <button type="button" class="btn btn-sm btn-outline-primary" aria-label="Edit review">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Delete review">
+                          <i class="bi bi-bell" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>SE 210</td>
+                    <td>Sprint Review</td>
+                    <td>April 27, 2025</td>
+                    <td><span class="badge bg-success">Completed</span></td>
+                    <td>
+                      <div class="btn-group" role="group" aria-label="Write Review">
+                        <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Contact Professor">
+                          <i class="bi bi-bell" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>DB 305</td>
+                    <td>Final Project</td>
+                    <td>May 22, 2025</td>
+                    <td><span class="badge bg-warning">Upcoming</span></td>
+                    <td>
+                      <div class="btn-group" role="group" aria-label="Write Review">
+                        <button href="" type="button" class="btn btn-sm btn-outline-primary" aria-label="Edit review">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Write Review">
+                          <i class="bi bi-bell" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer text-end">
+            <a href="#" class="btn btn-sm btn-outline-primary">View All Reviews</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity and Quick Actions -->
+      <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="mb-0">Recent Activity</h5>
+          </div>
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center bg-light text-dark">
+                <div>
+                  <span class="badge bg-success rounded-pill me-2">New</span>
+                  <span>Completed SE 210 Sprint Review</span>
+                </div>
+                <small class="text-muted">2 hours ago</small>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center bg-light text-dark">
+                <div>
+                  <span class="badge bg-info rounded-pill me-2">Update</span>
+                  <span>Review period for SE 210 has started</span>
+                </div>
+                <small class="text-muted">Yesterday</small>
+              </li>
+
+            </ul>
+          </div>
+          <div class="card-footer text-end">
+            <a href="#" class="btn btn-sm btn-outline-primary">View All Activity</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Other sections (hidden by default) -->
+    <div id="courses" class="container-fluid mt-5 pt-3" style="display: none;">
+      <!-- Stats Summary Cards -->
+      <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white h-100">
+          <div class="card-body">
+            <h5 class="card-title">CSC 3100</h5>
+            <p class="card-text display-4">3</p>
+          </div>
+            <a href="#" id="btnTeam1" class="btn btn-primary d-flex just justify-content-between gap-2 rounded-pill">
+              <small>View Course</small>
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white h-100">
+          <div class="card-body">
+            <h5 class="card-title">CSC 1200</h5>
+            <p class="card-text display-4">45</p>
+          </div>
+          <a href="#" id="btnTeam2" class="btn text-white d-flex justify-content-between align-items-center">
+            <small>View Course</small>
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+      <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white h-100">
+          <div class="card-body">
+            <h5 class="card-title">CSC 1310</h5>
+            <p class="card-text display-4">12</p>
+          </div>
+          <a href="#" id="btnTeam3" class="btn text-white d-flex justify-content-between align-items-center">
+            <small>View Course</small>
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="studentTeams" class="container-fluid mt-5 pt-3" style="display: none;">
+      <table class="table table-hover">
+        <caption>Team Member Information</caption>
+        <thead>
+          <tr>
+            <th scope="col">Course</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Discord</th>
+            <th scope="col">Phone</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CS 101</td>
+            <td>John</td>
+            <td>Doe</td>
+            <td>JohnDoe@tntech.edu</td>
+            <td>JohnDoe4</td>
+            <td>1234567890</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <div id="profile-section" class="row" style="display: none;">
+      <!-- Profile content will be loaded here -->
+    </div>
+
+    <div id="settings-section" class="row" style="display: none;">
+      <!-- Settings content will be loaded here -->
+    </div>
+  </main>
+
+ 
