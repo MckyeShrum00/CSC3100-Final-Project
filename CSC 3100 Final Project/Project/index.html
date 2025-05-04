@@ -5,336 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SwollenHippo - Peer Review System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/pulse/bootstrap.min.css" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#6f42c1">
-  <meta name="description" content="SwollenHippo - Peer Review System for Academic Courses">
-  <!-- Add to home screen for iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="SwollenHippo">
-  <link rel="apple-touch-icon" href="images/icons/icon-152x152.png">
-  <!-- Add custom styles -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-dark">
   <div class="d-flex justify-content-center align-items-center vh-100 flex-column">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">SwollenHippo</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="index.html">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="pages/landing.html">About</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
     <!-- Login Form -->
     <form class="card col-12 col-md-5 col-lg-4 mb-3" id="frmLogin" aria-label="Login Form">
       <div class="card-body">
         <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
         <h3 class="text-center mb-3">Login</h3>
-        <input id="txtUsername" class="form-control" type="email" placeholder="janedoe@tntech.edu" autocomplete="email" required />
-        <input id="txtPassword" class="form-control mt-2" type="password" placeholder="password" autocomplete="current-password" required />
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="flexCheckRemember" />
-            <label class="form-check-label" for="flexCheckRemember">Remember Me</label>
-          </div>
-          <button class="btn btn-link pr-0" type="button" id="btnPasswordReset">Reset Password?</button>
-        </div>
+        <input id="txtUsername" class="form-control" type="email" placeholder="Email" autocomplete="email" required aria-label="Email Address" />
+        <input id="txtPassword" class="form-control mt-2" type="password" placeholder="Password" autocomplete="current-password" required aria-label="Password" />
         <button class="btn btn-primary col-12 mt-3" type="button" id="btnLogin">Log In</button>
-        <div class="text-center mt-2">
-          <button class="btn btn-link" type="button" id="btnToRegisterOptions">Need an account? Register here!</button>
-        </div>
       </div>
     </form>
 
-    <!-- Password Reset Form -->
-    <form class="card col-12 col-md-5 col-lg-4 mb-3" id="frmPasswordReset" style="display: none;" aria-label="Password Reset Form">
-      <div class="card-body">
-        <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
-        <h3 class="text-center mb-3">Reset Password</h3>
-        <p class="text-center">Enter your email address to receive a password reset link.</p>
-        <input id="txtResetEmail" class="form-control" type="email" placeholder="janedoe@tntech.edu" autocomplete="email" required />
-        <button class="btn btn-primary col-12 mt-3" type="button" id="btnRequestReset">Send Reset Link</button>
-        <div class="text-center mt-2">
-          <button class="btn btn-link" type="button" id="btnBackToLoginFromReset">Back to Login</button>
-        </div>
-      </div>
-    </form>
-
-    <!-- Registration Option -->
-    <div class="card col-12 col-md-5 col-lg-4 mb-3" id="frmRegisterOptions" style="display: none;">
-      <div class="card-body text-center">
-        <h3 class="text-primary mb-4">Register As</h3>
-        <button class="btn btn-primary col-12 mb-2" id="btnToAdminRegister">Administrator</button>
-        <button class="btn btn-secondary col-12 mb-2" id="btnToStudentRegister">Student</button>
-        <button class="btn btn-link col-12" id="btnBackToLogin1">Back to Login</button>
-      </div>
-    </div>
-
-    <!-- Registration Forms -->
-    <form class="card col-12 col-md-5 col-lg-4 mb-3" id="frmRegisterAdmin" style="display: none;" aria-label="Admin Registration Form">
-      <div class="card-body">
-        <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
-        <h3 class="text-center mb-4">Administrator Registration</h3>
-        <h5 class="mb-2">Name:</h5>
-        <input id="txtFNameAdmin" class="form-control mb-2" type="text" placeholder="Jane" autocomplete="given-name" required />
-        <input id="txtLNameAdmin" class="form-control mb-3" type="text" placeholder="Doe" autocomplete="family-name" required />
-        <h5 class="mb-2">Account Information:</h5>
-        <input id="txtRegEmailAdmin" class="form-control mb-2" type="email" placeholder="janedoe@school.edu" autocomplete="email" required />
-        <input id="txtRegPasswordAdmin" class="form-control mb-3" type="password" placeholder="password" autocomplete="new-password" required />
-        <h5 class="mb-2">Contact Information:</h5>
-        <input id="numPhoneAdmin" class="form-control mb-2" type="tel" placeholder="123-428-0981" autocomplete="tel" />
-        <button class="btn btn-primary col-12 mt-2" type="button" id="btnRegistrationAdmin">Register</button>
-        <button class="btn btn-link col-12 mt-1" type="button" id="btnBackToRegisterOptions1">Back</button>
-      </div>
-    </form>
-
+    <!-- Registration Form -->
     <form class="card col-12 col-md-5 col-lg-4 mb-3" id="frmRegisterStudent" style="display: none;" aria-label="Student Registration Form">
       <div class="card-body">
         <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
         <h3 class="text-center mb-4">Student Registration</h3>
-        <h5 class="mb-2">Name:</h5>
-        <input id="txtFNameStudent" class="form-control mb-2" type="text" placeholder="Jane" autocomplete="given-name" required />
-        <input id="txtLNameStudent" class="form-control mb-3" type="text" placeholder="Doe" autocomplete="family-name" required />
-        <h5 class="mb-2">Account Information:</h5>
-        <input id="txtRegEmailStudent" class="form-control mb-2" type="email" placeholder="janedoe@school.edu" autocomplete="email" required />
-        <input id="txtRegPasswordStudent" class="form-control mb-3" type="password" placeholder="password" autocomplete="new-password" required />
-        <h5 class="mb-2">Contact Information:</h5>
-        <input id="numPhoneStudent" class="form-control mb-2" type="tel" placeholder="123-428-0981" autocomplete="tel" />
-        <input id="txtDiscord" class="form-control mb-2" type="text" placeholder="jane_Doe34">
-        <input id="txtTeams" class="form-control mb-3" type="email" placeholder="janedoe@tntech.edu" aria-label="email">
+        <input id="txtFNameStudent" class="form-control mb-2" type="text" placeholder="First Name" required aria-label="First Name" />
+        <input id="txtLNameStudent" class="form-control mb-3" type="text" placeholder="Last Name" required aria-label="Last Name" />
+        <input id="txtRegEmailStudent" class="form-control mb-2" type="email" placeholder="Email" required aria-label="Email Address" />
+        <input id="txtRegPasswordStudent" class="form-control mb-3" type="password" placeholder="Password" required aria-label="Password" />
         <button class="btn btn-primary col-12 mt-2" type="button" id="btnRegistrationStudent">Register</button>
-        <button class="btn btn-link col-12 mt-1" type="button" id="btnBackToRegisterOptions2">Back</button>
       </div>
     </form>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="js/auth.js"></script>
   <script>
-    // Regex for .edu email
-    const eduEmailRegex = /^[^@]+@[^@]+\.[eE][dD][uU]$/;
-    const phoneNumberRegex = /(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})-?\s?(\d{4})/;
-    const discordRegex = /^[^#]{2,32}#\d{4}$|^(?!.*\.\.|[A-Z])[a-z\d_.]{2,32}$/;
-    const nistPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()[\]{}<>\-_=+|/~])[A-Za-z\d@$!%*?&#^()[\]{}<>\-_=+|/~]{8,}$/;
-
-    // Show register options
-    $('#btnToRegisterOptions').on('click', function () {
-      $('#frmLogin').hide();
-      $('#frmRegisterOptions').show();
-    });
-
-    // Password reset flow
-    $('#btnPasswordReset').on('click', function() {
-      $('#frmLogin').hide();
-      $('#frmPasswordReset').show();
-    });
-
-    $('#btnBackToLoginFromReset').on('click', function() {
-      $('#frmPasswordReset').hide();
-      $('#frmLogin').show();
-    });
-
-    $('#btnRequestReset').on('click', function() {
-      const email = $('#txtResetEmail').val().trim();
-      
-      if (!eduEmailRegex.test(email)) {
-        Swal.fire({
-          title: 'Invalid Email',
-          text: 'Email must be a valid .edu address.',
-          icon: 'error'
-        });
-        return;
-      }
-      
-      Swal.fire({
-        title: 'Password Reset Request Sent',
-        text: 'If your email is registered in our system, you will receive a password reset link shortly.',
-        icon: 'success'
-      }).then(() => {
-        $('#frmPasswordReset').hide();
-        $('#frmLogin').show();
-      });
-    });
-
-    // register type toggle
-    $('#btnToAdminRegister').on('click', function () {
-      $('#frmRegisterOptions').hide();
-      $('#frmRegisterAdmin').show();
-    });
-
-    $('#btnToStudentRegister').on('click', function () {
-      $('#frmRegisterOptions').hide();
-      $('#frmRegisterStudent').show();
-    });
-
-    // back buttons
-    $('#btnBackToLogin1').on('click', function () {
-      $('#frmRegisterOptions').hide();
-      $('#frmLogin').show();
-    });
-
-    $('#btnBackToRegisterOptions1').on('click', function () {
-      $('#frmRegisterAdmin').hide();
-      $('#frmRegisterOptions').show();
-    });
-
-    $('#btnBackToRegisterOptions2').on('click', function () {
-      $('#frmRegisterStudent').hide();
-      $('#frmRegisterOptions').show();
-    });
-
-    // admin registration validation
-    $('#btnRegistrationAdmin').on('click', function () {
-      const strEmail = $('#txtRegEmailAdmin').val().trim()
-      const strPassword = $('#txtRegPasswordAdmin').val().trim()
-      const strFName = $('#txtFNameAdmin').val().trim()
-      const strLName = $('#txtLNameAdmin').val().trim()
-      const numPhone = $('#numPhoneAdmin').val().trim()
-      let message = ''
-
-      if (strFName.length < 1){
-        message += '<p>First name must be at least 1 characters.</p>'
-      }
-
-      if (strLName.length < 1){
-        message += '<p>Last name must be at least 1 characters.</p>'
-      }
-
-      if (!eduEmailRegex.test(strEmail)) {
-        message += '<p>Email must be a valid .edu address.</p>'
-      }
-
-      if (!nistPasswordRegex.test(strPassword)) {
-        message += '<p>Password must be at least 8 characters and include uppercase, lowercase, number, and special character.</p>';
-      }
-
-      if (!phoneNumberRegex.test(numPhone)) {
-        message += '<p>Phone number must be a valid phone number.</p>'
-      }
-
-      if (message) {
-        Swal.fire({ title: 'Fix these issues:', html: message, icon: 'error' })
-      } else {
-        console.log("Admin registration passed")
-        Swal.fire({ 
-          title: 'Admin registration successful!', 
-          icon: 'success' 
-        }).then(() => {
-          // Redirect to admin dashboard
-          window.location.href = 'pages/admin-dashboard.html';
-        });
-      }
-    });
-    
     // Login
     $('#btnLogin').on('click', function () {
-      const strEmail = $('#txtUsername').val().trim()
-      const strPassword = $('#txtPassword').val().trim()
-      let message = ''
+      const email = $('#txtUsername').val().trim();
+      const password = $('#txtPassword').val().trim();
 
-      if (!eduEmailRegex.test(strEmail)) {
-        message += '<p>Email must be a valid .edu address.</p>'
+      if (!email || !password) {
+        Swal.fire({ title: 'Error', text: 'Email and password are required.', icon: 'error' });
+        return;
       }
 
-      if (strPassword.length < 8) {
-        message += '<p>Password must be at least 8 characters.</p>';
-      }
-
-      if (message) {
-        Swal.fire({ title: 'Fix these issues:', html: message, icon: 'error' })
-      } else {
-        console.log("Login success")
-        
-        // Simulate a check for account type
-        if (strEmail.includes('admin')) {
-          // Admin login
-          Swal.fire({ 
-            title: 'Login successful!', 
-            text: 'Welcome to SwollenHippo',
-            icon: 'success' 
-          }).then(() => {
-            window.location.href = 'pages/admin-dashboard.html';
-          });
-        } else {
-          // Student login
-          Swal.fire({ 
-            title: 'Login successful!', 
-            text: 'Welcome to SwollenHippo',
-            icon: 'success' 
-          }).then(() => {
-            window.location.href = 'pages/student-dashboard.html';
-          });
-        }
-      }
-    });
-    
-    // Student registration
-    $('#btnRegistrationStudent').on('click', function () {
-      const strEmail = $('#txtRegEmailStudent').val().trim()
-      const strPassword = $('#txtRegPasswordStudent').val().trim()
-      const strFName = $('#txtFNameStudent').val().trim()
-      const strLName = $('#txtLNameStudent').val().trim()
-      const numPhone = $('#numPhoneStudent').val().trim()
-      const strDiscord = $('#txtDiscord').val().trim()
-      const strTeamsEmail = $('#txtTeams').val().trim()
-
-      let message = ''
-
-      if (strFName.length < 1){
-        message += '<p>First name must be at least 1 characters.</p>'
-      }
-
-      if (strLName.length < 1){
-        message += '<p>Last name must be at least 1 characters.</p>'
-      }
-
-      if (!eduEmailRegex.test(strEmail)) {
-        message += '<p>Email must be a valid .edu address.</p>'
-      }
-
-      if (!nistPasswordRegex.test(strPassword)) {
-        message += '<p>Password must be at least 8 characters and include uppercase, lowercase, number, and special character.</p>';
-      }
-
-      if (!phoneNumberRegex.test(numPhone)) {
-        message += '<p>Phone number must be a valid phone number.</p>'
-      }
-
-      if (!discordRegex.test(strDiscord)) {
-        message += '<p>Discord must be a valid discord username.</p>'
-      }
-      
-      if (!eduEmailRegex.test(strTeamsEmail)) {
-        message += '<p>Teams email must be a valid .edu address.</p>'
-      }
-      
-      if (message) {
-        Swal.fire({ title: 'Fix these issues:', html: message, icon: 'error' })
-      } else {
-        console.log("Student registration passed")
-        Swal.fire({ 
-          title: 'Student registration successful!',
-          icon: 'success' 
-        }).then(() => {
-          // Redirect to student dashboard
-          window.location.href = 'pages/student-dashboard.html';
+      authenticateUser(email, password)
+        .then(result => {
+          if (result.success) {
+            window.location.href = result.redirectUrl;
+          } else {
+            Swal.fire({ title: 'Error', text: result.message, icon: 'error' });
+          }
+        })
+        .catch(() => {
+          Swal.fire({ title: 'Error', text: 'Login failed.', icon: 'error' });
         });
+    });
+
+    // Student Registration
+    $('#btnRegistrationStudent').on('click', function () {
+      const userData = {
+        firstName: $('#txtFNameStudent').val().trim(),
+        lastName: $('#txtLNameStudent').val().trim(),
+        email: $('#txtRegEmailStudent').val().trim(),
+        password: $('#txtRegPasswordStudent').val().trim(),
+        userType: 'student',
+      };
+
+      if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+        Swal.fire({ title: 'Error', text: 'All fields are required.', icon: 'error' });
+        return;
       }
+
+      registerUser(userData)
+        .then(result => {
+          if (result.success) {
+            Swal.fire({ title: 'Success', text: 'Registration successful!', icon: 'success' })
+              .then(() => {
+                window.location.href = result.redirectUrl;
+              });
+          } else {
+            Swal.fire({ title: 'Error', text: result.message, icon: 'error' });
+          }
+        })
+        .catch(() => {
+          Swal.fire({ title: 'Error', text: 'Registration failed.', icon: 'error' });
+        });
     });
   </script>
 </body>

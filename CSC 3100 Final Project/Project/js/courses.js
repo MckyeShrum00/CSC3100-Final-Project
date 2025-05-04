@@ -1,7 +1,7 @@
 // File: js/courses.js
 /**
- * Course management functionality 
- * Handles viewing, creating, and managing courses
+ * Course management functionality
+ * Handles viewing, creating, editing, and managing courses
  */
 
 let coursesList = [];
@@ -13,12 +13,12 @@ $(document).ready(function () {
     setupCourseEventHandlers();
   }
 
-  // Handle modal action
+  // Handle modal actions
   $('#save-new-course').on('click', handleCreateCourse);
 });
 
 /**
- * Load courses list (simulated fetch)
+ * Load courses list from the backend
  */
 function loadCoursesList() {
   $('#courses-section').html(`
@@ -30,15 +30,32 @@ function loadCoursesList() {
     </div>
   `);
 
-  setTimeout(() => {
-    // Sample static data
-    coursesList = [
-      { id: 1, name: 'Introduction to Computer Science', code: 'CS 101', semester: 'Spring 2025', description: 'Intro course for CS fundamentals.' },
-      { id: 2, name: 'Software Engineering', code: 'SE 210', semester: 'Spring 2025', description: 'Covers agile practices and SDLC.' },
-      { id: 3, name: 'Database Systems', code: 'DB 305', semester: 'Fall 2025', description: 'Hands-on with SQL and NoSQL.' }
-    ];
-    renderCoursesList(coursesList);
-  }, 800);
+  fetch('http://localhost:8000/api/courses', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+  })
+    .then(response => {
+      if (response.status === 401) {
+        // Redirect to login if token is invalid or expired
+        window.location.href = '../index.html';
+        return;
+      }
+      return response.json();
+    })
+    .then(data => {
+      coursesList = data;
+      renderCoursesList(coursesList);
+    })
+    .catch(() => {
+      $('#courses-section').html(`
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Failed to load courses. Please try again later.
+        </div>
+      `);
+    });
 }
 
 /**
@@ -82,47 +99,7 @@ function renderCoursesList(courses) {
 }
 
 /**
- * Set up course modal and card button event handlers
- */
-function setupCourseEventHandlers() {
-  $(document).on('click', '.edit-course-btn', function () {
-    const courseId = $(this).data('id');
-    const course = coursesList.find(c => c.id === courseId);
-    if (course) {
-      $('#newCourseModalLabel').text('Edit Course');
-      $('#course-name').val(course.name);
-      $('#course-code').val(course.code);
-      $('#course-semester').val(course.semester);
-      $('#course-description').val(course.description);
-      $('#newCourseModal').modal('show');
-    }
-  });
-
-  $(document).on('click', '.delete-course-btn', function () {
-    const courseId = $(this).data('id');
-    const course = coursesList.find(c => c.id === courseId);
-    if (!course) return;
-
-    Swal.fire({
-      title: 'Delete Course',
-      text: `Are you sure you want to delete "${course.name}"?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        coursesList = coursesList.filter(c => c.id !== courseId);
-        renderCoursesList(coursesList);
-        Swal.fire('Deleted!', 'The course has been deleted.', 'success');
-      }
-    });
-  });
-}
-
-/**
- * Handle new course creation 
+ * Handle new course creation
  */
 function handleCreateCourse() {
   if (!$('#new-course-form')[0].checkValidity()) {
@@ -131,17 +108,82 @@ function handleCreateCourse() {
   }
 
   const newCourse = {
-    id: Math.floor(Math.random() * 10000),
     name: $('#course-name').val().trim(),
     code: $('#course-code').val().trim(),
     semester: $('#course-semester').val(),
-    description: $('#course-description').val().trim()
+    description: $('#course-description').val().trim(),
   };
 
-  coursesList.push(newCourse);
-  renderCoursesList(coursesList);
+  fetch('http://localhost:8000/api/courses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+    body: JSON.stringify(newCourse),
+  })
+    .then(response => {
+      if (response.status === 401) {
+        window.location.href = '../index.html';
+        return;
+      }
+      if (!response.ok) {
+        throw new Error('Failed to create course');
+      }
+      return response.json();
+    })
+    .then(data => {
+      coursesList.push(data);
+      renderCoursesList(coursesList);
 
-  Swal.fire('Success!', `Course "${newCourse.name}" created.`, 'success');
-  $('#newCourseModal').modal('hide');
-  $('#new-course-form')[0].reset();
+      Swal.fire('Success!', `Course "${data.name}" created.`, 'success');
+      $('#newCourseModal').modal('hide');
+      $('#new-course-form')[0].reset();
+    })
+    .catch(() => {
+      Swal.fire('Error', 'Failed to create course. Please try again.', 'error');
+    });
 }
+
+/**
+ * Handle course deletion
+ */
+function handleDeleteCourse(courseId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+  }).then(result => {
+    if (result.isConfirmed) {
+      fetch(`http://localhost:8000/api/courses/${courseId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+        },
+      })
+        .then(response => {
+          if (response.status === 401) {
+            window.location.href = '../index.html';
+            return;
+          }
+          if (!response.ok) {
+            throw new Error('Failed to delete course');
+          }
+          coursesList = coursesList.filter(course => course.id !== courseId);
+          renderCoursesList(coursesList);
+          Swal.fire('Deleted!', 'The course has been deleted.', 'success');
+        })
+        .catch(() => {
+          Swal.fire('Error', 'Failed to delete course. Please try again.', 'error');
+        });
+    }
+  });
+}
+
+// Attach delete event handler
+$(document).on('click', '.delete-course-btn', function () {
+  const courseId = $(this).data('id');
+  handleDeleteCourse(courseId);
+});

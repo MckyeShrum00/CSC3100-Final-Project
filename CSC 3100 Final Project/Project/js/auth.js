@@ -1,7 +1,7 @@
 // AUTH.JS
 // File: js/auth.js
 /**
- * Authentication related functionality 
+ * Authentication-related functionality
  */
 
 // Constants
@@ -9,106 +9,100 @@ const TOKEN_KEY = 'swollenhippo_auth_token';
 const USER_KEY = 'swollenhippo_user';
 
 /**
- * user authentication
+ * Authenticates a user by sending credentials to the backend.
  * @param {string} email User email
  * @param {string} password User password
  * @returns {Promise} Authentication result
  */
 function authenticateUser(email, password) {
-  return new Promise((resolve, reject) => {
-    
-    setTimeout(() => {
-      // Check if email contains admin to determine user type 
-      const isAdmin = email.includes('admin');
-      
-      if (email && password.length >= 8) {
-        const userData = {
-          id: Math.floor(Math.random() * 1000) + 1,
-          email: email,
-          firstName: isAdmin ? 'Admin' : 'Student',
-          lastName: 'User',
-          userType: isAdmin ? 'admin' : 'student'
-        };
-        
-        // Generate a fake token
-        const token = btoa(JSON.stringify({
-          userId: userData.id,
-          email: userData.email,
-          exp: new Date().getTime() + (24 * 60 * 60 * 1000) 
-        }));
-        
-        // Store authentication data
-        localStorage.setItem(TOKEN_KEY, token);
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-        
-        resolve({
-          success: true,
-          user: userData,
-          redirectUrl: isAdmin ? 'pages/admin-dashboard.html' : 'pages/student-dashboard.html'
-        });
-      } else {
-        reject({ 
-          success: false, 
-          message: 'Invalid email or password' 
-        });
+  return fetch('http://localhost:8000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Invalid email or password');
       }
-    }, 700); 
-  });
+      return response.json();
+    })
+    .then(data => {
+      // Store the token and user data
+      localStorage.setItem(TOKEN_KEY, data.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+      return {
+        success: true,
+        user: data.user,
+        redirectUrl: data.user.userType === 'admin'
+          ? 'pages/admin-dashboard.html'
+          : 'pages/student-dashboard.html',
+      };
+    })
+    .catch(error => {
+      return {
+        success: false,
+        message: error.message,
+      };
+    });
 }
 
 /**
- * Registers a new user
+ * Registers a new user by sending data to the backend.
  * @param {Object} userData User registration data
  * @returns {Promise} Registration result
  */
 function registerUser(userData) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (userData.email && userData.password && userData.firstName && userData.lastName) {
-        // Generate a user ID
-        userData.id = Math.floor(Math.random() * 1000) + 1;
-        
-        // Generate a fake token
-        const token = btoa(JSON.stringify({
-          userId: userData.id,
-          email: userData.email,
-          exp: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 hours
-        }));
-        
-        // Store authentication data
-        localStorage.setItem(TOKEN_KEY, token);
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-        
-        resolve({
-          success: true,
-          user: userData,
-          redirectUrl: userData.userType === 'admin' ? 'pages/admin-dashboard.html' : 'pages/student-dashboard.html'
-        });
-      } else {
-        reject({ 
-          success: false, 
-          message: 'Missing required registration fields' 
-        });
+  return fetch('http://localhost:8000/api/auth/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Registration failed');
       }
-    }, 700); // Simulate network delay
-  });
+      return response.json();
+    })
+    .then(data => {
+      // Store the token and user data
+      localStorage.setItem(TOKEN_KEY, data.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+
+      return {
+        success: true,
+        user: data.user,
+        redirectUrl: userData.userType === 'admin'
+          ? 'pages/admin-dashboard.html'
+          : 'pages/student-dashboard.html',
+      };
+    })
+    .catch(error => {
+      return {
+        success: false,
+        message: error.message,
+      };
+    });
 }
 
 /**
- * Checks if user is authenticated
+ * Checks if the user is authenticated by verifying the token.
  * @returns {boolean} Authentication status
  */
 function isAuthenticated() {
   const token = localStorage.getItem(TOKEN_KEY);
-  
   if (!token) {
     return false;
   }
-  
+
   try {
-    const tokenData = JSON.parse(atob(token));
+    const tokenData = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
     // Check token expiration
-    if (tokenData.exp < new Date().getTime()) {
+    if (tokenData.exp * 1000 < new Date().getTime()) {
       // Token expired, clear storage
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
@@ -124,14 +118,14 @@ function isAuthenticated() {
 }
 
 /**
- * Gets current user data
+ * Gets the current user data from localStorage.
  * @returns {Object|null} User data or null if not authenticated
  */
 function getCurrentUser() {
   if (!isAuthenticated()) {
     return null;
   }
-  
+
   try {
     return JSON.parse(localStorage.getItem(USER_KEY));
   } catch (e) {
@@ -140,7 +134,7 @@ function getCurrentUser() {
 }
 
 /**
- * Logs out the current user
+ * Logs out the current user by clearing localStorage and redirecting to login.
  */
 function logoutUser() {
   localStorage.removeItem(TOKEN_KEY);
@@ -149,16 +143,18 @@ function logoutUser() {
 }
 
 // Attach logout handler to all logout buttons
-$(document).ready(function() {
-  $('#nav-logout').on('click', function(e) {
+$(document).ready(function () {
+  $('#nav-logout').on('click', function (e) {
     e.preventDefault();
     logoutUser();
   });
-  
+
   // If on a secured page, redirect to login if not authenticated
-  if (window.location.pathname.includes('/pages/') && 
-      !window.location.pathname.includes('/landing.html') && 
-      !isAuthenticated()) {
+  if (
+    window.location.pathname.includes('/pages/') &&
+    !window.location.pathname.includes('/landing.html') &&
+    !isAuthenticated()
+  ) {
     window.location.href = '../index.html';
   }
 });

@@ -1,212 +1,172 @@
-// File: js/reviews.js
 /**
- * Reviews management functionality 
+ * Reviews management functionality
  * Handles creating, editing, managing, and completing peer reviews
  */
 
 // Global variables
 let reviewsList = [];
 let currentReview = null;
-let reviewQuestions = [];
-let reviewTeamMembers = [];
 
 $(document).ready(function () {
-  initializeReviewsModule();
-  setupReviewsEventHandlers();
+  // Initialize the reviews module if the section exists
+  if ($('#reviews-section').length) {
+    loadReviewsList();
+    setupReviewEventHandlers();
+  }
+
+  // Handle modal action
+  $('#save-new-review').on('click', handleCreateReview);
 });
 
-function initializeReviewsModule() {
-  if ($('#reviews-container').length) loadReviewsList();
-  if ($('#pending-reviews-container').length) loadPendingReviews();
-  if ($('#completed-reviews-container').length) loadCompletedReviews();
-}
-
-function setupReviewsEventHandlers() {
-  $('#create-review-btn').on('click', showCreateReviewModal);
-  $('#add-question-btn').on('click', addNewQuestion);
-
-  $(document).on('change', '.question-type-select', function () {
-    const questionId = $(this).attr('id').split('-')[1];
-    updateQuestionOptions(questionId, $(this).val());
-  });
-
-  $(document).on('click', '.remove-question-btn', function () {
-    if ($('.question-card').length > 1) {
-      $(this).closest('.question-card').remove();
-    } else {
-      Swal.fire({
-        title: 'Warning',
-        text: 'You must have at least one question in the review.',
-        icon: 'warning'
-      });
-    }
-  });
-
-  $('#save-create-review').on('click', handleCreateReview);
-  $('#save-schedule-review').on('click', handleScheduleReview); // optional
-  $('#review-course').on('change', function () {
-    const courseId = $(this).val();
-    if (courseId) loadCourseTeams(courseId);
-  });
-
-  $(document).on('click', '.edit-review-btn', function () {
-    const id = $(this).data('review-id');
-    editReview(id); // implement if needed
-  });
-
-  $(document).on('click', '.delete-review-btn', function () {
-    const id = $(this).data('review-id');
-    confirmDeleteReview(id); // implement if needed
-  });
-
-  $(document).on('click', '.view-review-btn', function () {
-    const id = $(this).data('review-id');
-    viewReviewDetails(id); // implement if needed
-  });
-
-  $(document).on('click', '.start-review-btn', function () {
-    const id = $(this).data('review-id');
-    startReview(id); // implement if needed
-  });
-
-  $('#submit-review-btn').on('click', submitReview);
-  $('#toggle-public-feedback').on('change', function () {
-    $('.public-feedback-container').toggle($(this).prop('checked'));
-  });
-}
-
-function showCreateReviewModal() {
-  $('#create-review-form')[0].reset();
-  $('#createReviewModalLabel').text('Create New Review');
-  $('#save-create-review').text('Create Review');
-  $('#questions-container').empty();
-  addNewQuestion();
-  loadAvailableCourses();
-  $('#createReviewModal').modal('show');
-}
-
-function addNewQuestion() {
-  const count = $('.question-card').length + 1;
-  const html = `
-    <div class="card mb-3 question-card">
-      <div class="card-body">
-        <div class="row mb-2">
-          <div class="col-md-8">
-            <label for="question-${count}-text" class="form-label">Question Text</label>
-            <input type="text" class="form-control" id="question-${count}-text" placeholder="Enter your question" required>
-          </div>
-          <div class="col-md-4">
-            <label for="question-${count}-type" class="form-label">Question Type</label>
-            <select class="form-select question-type-select" id="question-${count}-type" required>
-              <option value="likert">Likert Scale</option>
-              <option value="multiple">Multiple Choice</option>
-              <option value="text">Short Answer</option>
-            </select>
-          </div>
-        </div>
-        <div class="question-options" id="question-${count}-options">
-          ${generateLikertOptions()}
-        </div>
-        <div class="form-check form-switch mt-3">
-          <input class="form-check-input" type="checkbox" id="question-${count}-required" checked>
-          <label class="form-check-label" for="question-${count}-required">Required</label>
-        </div>
-        <div class="text-end mt-2">
-          <button type="button" class="btn btn-sm btn-outline-danger remove-question-btn">
-            <i class="bi bi-trash"></i> Remove
-          </button>
-        </div>
+/**
+ * Load reviews list from the backend
+ */
+function loadReviewsList() {
+  $('#reviews-section').html(`
+    <div class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
+      <p class="mt-2">Loading reviews...</p>
     </div>
-  `;
-  $('#questions-container').append(html);
-}
+  `);
 
-function updateQuestionOptions(questionId, type) {
-  const container = $(`#question-${questionId}-options`);
-  container.empty();
-
-  if (type === 'likert') {
-    container.html(generateLikertOptions());
-  } else if (type === 'multiple') {
-    container.html(`
-      <label class="form-label">Answer Options</label>
-      ${['A', 'B', 'C'].map(letter => `
-        <div class="input-group mb-2">
-          <span class="input-group-text">${letter}</span>
-          <input type="text" class="form-control" placeholder="Option ${letter}">
+  fetch('http://localhost:8000/api/reviews', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      reviewsList = data;
+      renderReviewsList(reviewsList);
+    })
+    .catch(() => {
+      $('#reviews-section').html(`
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Failed to load reviews. Please try again later.
         </div>
-      `).join('')}
-    `);
-  } else if (type === 'text') {
-    container.html(`
-      <label class="form-label">Max Answer Length</label>
-      <div class="input-group">
-        <input type="number" class="form-control" value="500" min="50" max="2000">
-        <span class="input-group-text">characters</span>
-      </div>
-    `);
-  }
+      `);
+    });
 }
 
-function generateLikertOptions() {
-  const labels = ['Poor', 'Below Avg', 'Average', 'Above Avg', 'Excellent'];
-  return `
-    <label class="form-label">Scale Options</label>
-    ${labels.map((label, i) => `
-      <div class="input-group mb-2">
-        <span class="input-group-text">${i + 1}</span>
-        <input type="text" class="form-control" value="${label}">
+/**
+ * Render reviews in a card view
+ */
+function renderReviewsList(reviews) {
+  if (!reviews || reviews.length === 0) {
+    $('#reviews-section').html(`
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No reviews found. Use the "Create New Review" button to add one.
       </div>
-    `).join('')}
-  `;
-}
-
-function handleCreateReview() {
-  if (!$('#create-review-form')[0].checkValidity()) {
-    $('#create-review-form')[0].reportValidity();
+    `);
     return;
   }
 
-  const data = {
-    course: $('#review-course').val(),
-    team: $('#review-team').val(),
-    name: $('#review-name').val().trim(),
-    type: $('#review-type').val(),
-    privateEnabled: $('#include-private-feedback').prop('checked'),
-    publicEnabled: $('#include-public-feedback').prop('checked'),
-    questions: []
+  let html = '<div class="row">';
+  reviews.forEach(review => {
+    html += `
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">${review.title}</h5>
+            <p class="card-text">${review.description || 'No description provided.'}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-end gap-2">
+            <button class="btn btn-sm btn-outline-secondary edit-review-btn" data-id="${review.id}">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger delete-review-btn" data-id="${review.id}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  $('#reviews-section').html(html);
+}
+
+/**
+ * Handle new review creation
+ */
+function handleCreateReview() {
+  if (!$('#new-review-form')[0].checkValidity()) {
+    $('#new-review-form')[0].reportValidity();
+    return;
+  }
+
+  const newReview = {
+    title: $('#review-title').val().trim(),
+    description: $('#review-description').val().trim(),
   };
 
-  $('.question-card').each(function () {
-    const qId = $(this).find('.question-type-select').attr('id').split('-')[1];
-    const type = $(`#question-${qId}-type`).val();
-    const q = {
-      text: $(`#question-${qId}-text`).val().trim(),
-      type,
-      required: $(`#question-${qId}-required`).prop('checked'),
-      options: []
-    };
+  fetch('http://localhost:8000/api/reviews', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+    body: JSON.stringify(newReview),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to create review');
+      }
+      return response.json();
+    })
+    .then(data => {
+      reviewsList.push(data);
+      renderReviewsList(reviewsList);
 
-    if (type === 'likert' || type === 'multiple') {
-      $(this).find('.input-group input').each(function (i) {
-        const value = type === 'likert' ? (i + 1) : String.fromCharCode(65 + i);
-        q.options.push({ value, text: $(this).val().trim() });
-      });
-    } else if (type === 'text') {
-      q.maxLength = $(this).find('input[type="number"]').val();
-    }
+      Swal.fire('Success!', `Review "${data.title}" created.`, 'success');
+      $('#newReviewModal').modal('hide');
+      $('#new-review-form')[0].reset();
+    })
+    .catch(() => {
+      Swal.fire('Error', 'Failed to create review. Please try again.', 'error');
+    });
+}
 
-    data.questions.push(q);
-  });
-
+/**
+ * Handle review deletion
+ */
+function handleDeleteReview(reviewId) {
   Swal.fire({
-    title: 'Success!',
-    text: `Review "${data.name}" has been created.`,
-    icon: 'success'
-  }).then(() => {
-    $('#createReviewModal').modal('hide');
-    $('#create-review-form')[0].reset();
-    loadReviewsList(); // reload simulated list
+    title: 'Are you sure?',
+    text: 'This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+  }).then(result => {
+    if (result.isConfirmed) {
+      fetch(`http://localhost:8000/api/reviews/${reviewId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to delete review');
+          }
+          reviewsList = reviewsList.filter(review => review.id !== reviewId);
+          renderReviewsList(reviewsList);
+          Swal.fire('Deleted!', 'The review has been deleted.', 'success');
+        })
+        .catch(() => {
+          Swal.fire('Error', 'Failed to delete review. Please try again.', 'error');
+        });
+    }
   });
 }
+
+// Attach delete event handler
+$(document).on('click', '.delete-review-btn', function () {
+  const reviewId = $(this).data('id');
+  handleDeleteReview(reviewId);
+});

@@ -20,9 +20,6 @@ $(document).ready(function () {
     $('#nav-reports').on('click', () => $('#studentReports').show());
     $('#nav-teams').on('click', () => $('#studentTeams').show());
     
-      
-    
-    
     const user = getCurrentUser();
     if (user) {
       $('#user-name').text(`${user.firstName} ${user.lastName}`);

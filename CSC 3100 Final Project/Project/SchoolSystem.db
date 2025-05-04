@@ -5,23 +5,24 @@ USE SchoolSystem;
 -- tblUsers
 CREATE TABLE tblUsers (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
-    FirstName VARCHAR(100),
-    LastName VARCHAR(100),
-    Email VARCHAR(255) UNIQUE,
-    Password VARCHAR(255),
-    CreationDateTime DATETIME,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    UserType ENUM('student', 'instructor', 'admin') DEFAULT 'student',
+    CreationDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     LastLoginDateTime DATETIME
 );
 
 -- tblCourses
 CREATE TABLE tblCourses (
     CourseID INT AUTO_INCREMENT PRIMARY KEY,
-    CourseName VARCHAR(255),
-    CourseNumber VARCHAR(100),
+    CourseName VARCHAR(255) NOT NULL,
+    CourseNumber VARCHAR(100) NOT NULL,
     CourseSection VARCHAR(50),
     CourseTerm VARCHAR(50),
-    StartDate DATE,
-    EndDate DATE
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL
 );
 
 -- tblPhone
@@ -57,9 +58,9 @@ CREATE TABLE tblEnrollments (
 CREATE TABLE tblAssessments (
     AssessmentID INT AUTO_INCREMENT PRIMARY KEY,
     CourseID INT,
-    StartDate DATE,
-    EndDate DATE,
-    Name VARCHAR(255),
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    Name VARCHAR(255) NOT NULL,
     Status VARCHAR(50),
     Type VARCHAR(50),
     FOREIGN KEY (CourseID) REFERENCES tblCourses(CourseID)
@@ -92,7 +93,7 @@ CREATE TABLE tblAssessmentResponses (
 -- tblCourseGroups
 CREATE TABLE tblCourseGroups (
     GroupID INT AUTO_INCREMENT PRIMARY KEY,
-    GroupName VARCHAR(255),
+    GroupName VARCHAR(255) NOT NULL,
     CourseID INT,
     FOREIGN KEY (CourseID) REFERENCES tblCourses(CourseID)
 );
@@ -110,7 +111,7 @@ CREATE TABLE tblGroupMembers (
 CREATE TABLE tblSessions (
     SessionID INT AUTO_INCREMENT PRIMARY KEY,
     UserID INT,
-    StartDateTime DATETIME,
+    StartDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     LastUsedDateTime DATETIME,
     Status VARCHAR(50),
     FOREIGN KEY (UserID) REFERENCES tblUsers(UserID)
@@ -119,7 +120,7 @@ CREATE TABLE tblSessions (
 -- tblLogs
 CREATE TABLE tblLogs (
     LogID INT AUTO_INCREMENT PRIMARY KEY,
-    Description TEXT,
+    Description TEXT NOT NULL,
     Type ENUM('Error', 'Info', 'Warning', 'Debug'),
-    DateTime DATETIME
+    DateTime DATETIME DEFAULT CURRENT_TIMESTAMP
 );
