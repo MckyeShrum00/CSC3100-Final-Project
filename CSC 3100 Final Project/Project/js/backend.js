@@ -8,7 +8,7 @@ const path = require('path')
 
 
 const app = express()
-app.use(express.static(path.join(__dirname, '../')))
+app.use(express.static(path.join(__dirname, '../CSC 3100 Final Project/Project')))
 const PORT = 8000
 const SECRET_KEY = 'your_secret_key'
 
