@@ -6,9 +6,9 @@ const jwt = require('jsonwebtoken')
 const sqlite3 = require('sqlite3').verbose()
 const path = require('path')
 
-app.use(express.static(path.join(__dirname, '../')))
 
 const app = express()
+app.use(express.static(path.join(__dirname, '../')))
 const PORT = 8000
 const SECRET_KEY = 'your_secret_key'
 
