@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SwollenHippo - Peer Review System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/pulse/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
@@ -14,9 +14,12 @@
       <div class="card-body">
         <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
         <h3 class="text-center mb-3">Login</h3>
-        <input id="txtUsername" class="form-control" type="email" placeholder="Email" autocomplete="email" required aria-label="Email Address" />
-        <input id="txtPassword" class="form-control mt-2" type="password" placeholder="Password" autocomplete="current-password" required aria-label="Password" />
+        <input id="txtUsername" class="form-control" type="email" placeholder="Email" autocomplete="email" required />
+        <input id="txtPassword" class="form-control mt-2" type="password" placeholder="Password" autocomplete="current-password" required />
         <button class="btn btn-primary col-12 mt-3" type="button" id="btnLogin">Log In</button>
+        <p class="text-center mt-3">
+          Don't have an account? <a href="#" id="showRegisterForm">Register here</a>
+        </p>
       </div>
     </form>
 
@@ -25,19 +28,34 @@
       <div class="card-body">
         <h1 class="text-center mb-0 text-primary">SwollenHippo</h1>
         <h3 class="text-center mb-4">Student Registration</h3>
-        <input id="txtFNameStudent" class="form-control mb-2" type="text" placeholder="First Name" required aria-label="First Name" />
-        <input id="txtLNameStudent" class="form-control mb-3" type="text" placeholder="Last Name" required aria-label="Last Name" />
-        <input id="txtRegEmailStudent" class="form-control mb-2" type="email" placeholder="Email" required aria-label="Email Address" />
-        <input id="txtRegPasswordStudent" class="form-control mb-3" type="password" placeholder="Password" required aria-label="Password" />
+        <input id="txtFNameStudent" class="form-control mb-2" type="text" placeholder="First Name" required />
+        <input id="txtLNameStudent" class="form-control mb-3" type="text" placeholder="Last Name" required />
+        <input id="txtRegEmailStudent" class="form-control mb-2" type="email" placeholder="Email" required />
+        <input id="txtRegPasswordStudent" class="form-control mb-3" type="password" placeholder="Password" required />
         <button class="btn btn-primary col-12 mt-2" type="button" id="btnRegistrationStudent">Register</button>
+        <p class="text-center mt-3">
+          Already have an account? <a href="#" id="showLoginForm">Log in here</a>
+        </p>
       </div>
     </form>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="js/auth.js"></script>
   <script>
+    // Toggle between Login and Registration forms
+    $('#showRegisterForm').on('click', function (e) {
+      e.preventDefault();
+      $('#frmLogin').hide();
+      $('#frmRegisterStudent').show();
+    });
+
+    $('#showLoginForm').on('click', function (e) {
+      e.preventDefault();
+      $('#frmRegisterStudent').hide();
+      $('#frmLogin').show();
+    });
+
     // Login
     $('#btnLogin').on('click', function () {
       const email = $('#txtUsername').val().trim();
@@ -48,47 +66,57 @@
         return;
       }
 
-      authenticateUser(email, password)
-        .then(result => {
-          if (result.success) {
-            window.location.href = result.redirectUrl;
+      fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            Swal.fire({ title: 'Error', text: data.error, icon: 'error' });
           } else {
-            Swal.fire({ title: 'Error', text: result.message, icon: 'error' });
+            Swal.fire({ title: 'Success', text: 'Login successful!', icon: 'success' }).then(() => {
+              localStorage.setItem('auth_token', data.token);
+              window.location.href = 'dashboard.html';
+            });
           }
         })
         .catch(() => {
-          Swal.fire({ title: 'Error', text: 'Login failed.', icon: 'error' });
+          Swal.fire({ title: 'Error', text: 'Login failed. Please try again.', icon: 'error' });
         });
     });
 
-    // Student Registration
+    // Registration
     $('#btnRegistrationStudent').on('click', function () {
-      const userData = {
-        firstName: $('#txtFNameStudent').val().trim(),
-        lastName: $('#txtLNameStudent').val().trim(),
-        email: $('#txtRegEmailStudent').val().trim(),
-        password: $('#txtRegPasswordStudent').val().trim(),
-        userType: 'student',
-      };
+      const firstName = $('#txtFNameStudent').val().trim();
+      const lastName = $('#txtLNameStudent').val().trim();
+      const email = $('#txtRegEmailStudent').val().trim();
+      const password = $('#txtRegPasswordStudent').val().trim();
+      const userType = 'student';
 
-      if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+      if (!firstName || !lastName || !email || !password) {
         Swal.fire({ title: 'Error', text: 'All fields are required.', icon: 'error' });
         return;
       }
 
-      registerUser(userData)
-        .then(result => {
-          if (result.success) {
-            Swal.fire({ title: 'Success', text: 'Registration successful!', icon: 'success' })
-              .then(() => {
-                window.location.href = result.redirectUrl;
-              });
+      fetch('http://localhost:8000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password, userType }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            Swal.fire({ title: 'Error', text: data.error, icon: 'error' });
           } else {
-            Swal.fire({ title: 'Error', text: result.message, icon: 'error' });
+            Swal.fire({ title: 'Success', text: 'Registration successful!', icon: 'success' }).then(() => {
+              window.location.href = 'index.html';
+            });
           }
         })
         .catch(() => {
-          Swal.fire({ title: 'Error', text: 'Registration failed.', icon: 'error' });
+          Swal.fire({ title: 'Error', text: 'Registration failed. Please try again.', icon: 'error' });
         });
     });
   </script>
