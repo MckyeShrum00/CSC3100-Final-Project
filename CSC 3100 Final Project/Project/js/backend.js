@@ -58,6 +58,66 @@ function verifyToken(req, res, next) {
     });
 }
 
+// --- Authentication Endpoints ---
+app.post('/api/auth/register', (req, res) => {
+    const { email, password, firstName, lastName, userType } = req.body;
+
+    if (!email || !password || !firstName || !lastName || !userType) {
+        return res.status(400).json({ error: 'All fields are required.' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const query = `INSERT INTO tblUsers (Email, Password, FirstName, LastName, UserType) VALUES (?, ?, ?, ?, ?)`;
+
+    db.run(query, [email, hashedPassword, firstName, lastName, userType], function (err) {
+        if (err) {
+            if (err.message.includes('UNIQUE constraint failed')) {
+                return res.status(400).json({ error: 'Email already exists.' });
+            }
+            return res.status(500).json({ error: 'Failed to register user.' });
+        }
+        res.status(201).json({ message: 'User registered successfully.' });
+    });
+});
+
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+    }
+
+    const query = `SELECT * FROM tblUsers WHERE Email = ?`;
+    db.get(query, [email], (err, user) => {
+        if (err) {
+            console.error("Database error:", err.message);
+            return res.status(500).json({ error: 'Database error.' });
+        }
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
+
+        const isPasswordValid = bcrypt.compareSync(password, user.Password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
+
+        const token = jwt.sign(
+            { userId: user.UserID, email: user.Email, userType: user.UserType },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+        res.status(200).json({
+            token,
+            user: {
+                firstName: user.FirstName,
+                lastName: user.LastName,
+                userType: user.UserType,
+            },
+        });
+    });
+});
+
 // --- Courses Endpoints ---
 app.get('/api/courses', verifyToken, (req, res) => {
     const query = `SELECT * FROM tblCourses`;
