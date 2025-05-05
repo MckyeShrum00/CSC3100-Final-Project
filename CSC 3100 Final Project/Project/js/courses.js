@@ -36,10 +36,12 @@ function loadCoursesList() {
   })
     .then(response => response.json())
     .then(data => {
+      console.log('Courses loaded successfully:', data); // Debugging log
       coursesList = data;
       renderCoursesList(coursesList);
     })
-    .catch(() => {
+    .catch(error => {
+      console.error('Error loading courses:', error); // Debugging log
       $('#courses-section').html(`
         <div class="alert alert-danger">
           <i class="bi bi-exclamation-triangle me-2"></i>
@@ -93,7 +95,10 @@ function renderCoursesList(courses) {
  * Handle new course creation
  */
 function handleCreateCourse() {
+  console.log('Create Course button clicked'); // Debugging log
+
   if (!$('#new-course-form')[0].checkValidity()) {
+    console.error('Form validation failed'); // Debugging log
     $('#new-course-form')[0].reportValidity();
     return;
   }
@@ -101,9 +106,11 @@ function handleCreateCourse() {
   const newCourse = {
     courseName: $('#course-name').val().trim(),
     courseCode: $('#course-code').val().trim(),
-    Semester: $('#course-semester').val(), 
+    semester: $('#course-semester').val(),
     description: $('#course-description').val().trim(),
   };
+
+  console.log('New course data:', newCourse); // Debugging log
 
   fetch('http://localhost:8000/api/courses', {
     method: 'POST',
@@ -113,8 +120,14 @@ function handleCreateCourse() {
     },
     body: JSON.stringify(newCourse),
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to create course');
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Course created successfully:', data); // Debugging log
       coursesList.push(data);
       renderCoursesList(coursesList);
 
@@ -122,7 +135,8 @@ function handleCreateCourse() {
       $('#newCourseModal').modal('hide');
       $('#new-course-form')[0].reset();
     })
-    .catch(() => {
+    .catch(error => {
+      console.error('Error creating course:', error); // Debugging log
       Swal.fire('Error', 'Failed to create course. Please try again.', 'error');
     });
 }
@@ -135,9 +149,11 @@ function handleEditCourse() {
   const updatedCourse = {
     courseName: $('#edit-course-name').val().trim(),
     courseCode: $('#edit-course-code').val().trim(),
-    Semester: $('#edit-course-semester').val(), 
+    semester: $('#edit-course-semester').val(),
     description: $('#edit-course-description').val().trim(),
   };
+
+  console.log('Editing course with ID:', courseId, 'Updated data:', updatedCourse); // Debugging log
 
   fetch(`http://localhost:8000/api/courses/${courseId}`, {
     method: 'PUT',
@@ -149,6 +165,7 @@ function handleEditCourse() {
   })
     .then(response => response.json())
     .then(() => {
+      console.log('Course updated successfully'); // Debugging log
       const index = coursesList.findIndex(course => course.CourseID === parseInt(courseId));
       if (index !== -1) {
         coursesList[index] = { ...coursesList[index], ...updatedCourse };
@@ -158,7 +175,8 @@ function handleEditCourse() {
       Swal.fire('Success!', 'Course updated successfully.', 'success');
       $('#editCourseModal').modal('hide');
     })
-    .catch(() => {
+    .catch(error => {
+      console.error('Error updating course:', error); // Debugging log
       Swal.fire('Error', 'Failed to update course. Please try again.', 'error');
     });
 }
@@ -167,6 +185,8 @@ function handleEditCourse() {
  * Handle course deletion
  */
 function handleDeleteCourse(courseId) {
+  console.log('Deleting course with ID:', courseId); // Debugging log
+
   Swal.fire({
     title: 'Are you sure?',
     text: 'This action cannot be undone.',
@@ -182,11 +202,13 @@ function handleDeleteCourse(courseId) {
         },
       })
         .then(() => {
+          console.log('Course deleted successfully'); // Debugging log
           coursesList = coursesList.filter(course => course.CourseID !== courseId);
           renderCoursesList(coursesList);
           Swal.fire('Deleted!', 'The course has been deleted.', 'success');
         })
-        .catch(() => {
+        .catch(error => {
+          console.error('Error deleting course:', error); // Debugging log
           Swal.fire('Error', 'Failed to delete course. Please try again.', 'error');
         });
     }
@@ -200,10 +222,11 @@ function setupCourseEventHandlers() {
     const course = coursesList.find(course => course.CourseID === courseId);
 
     if (course) {
+      console.log('Editing course:', course); // Debugging log
       $('#edit-course-id').val(course.CourseID);
       $('#edit-course-name').val(course.CourseName);
       $('#edit-course-code').val(course.CourseCode);
-      $('#edit-course-semester').val(course.Semester); 
+      $('#edit-course-semester').val(course.Semester);
       $('#edit-course-description').val(course.Description);
 
       $('#editCourseModal').modal('show');
