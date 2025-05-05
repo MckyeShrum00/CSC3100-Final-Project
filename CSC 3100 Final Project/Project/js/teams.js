@@ -1,20 +1,16 @@
+// TEAMS.JS
 /**
  * Teams management functionality
- * Handles creating, editing, and managing teams
  */
 
-// Global variables
-let currentCourse = null;
 let teamsList = [];
 
 $(document).ready(function () {
-  // Initialize the teams module if the section exists
   if ($('#teams-section').length) {
     loadTeamsList();
     setupTeamEventHandlers();
   }
 
-  // Handle modal action
   $('#save-new-team').on('click', handleCreateTeam);
 });
 
@@ -31,7 +27,7 @@ function loadTeamsList() {
     </div>
   `);
 
-  fetch('http://localhost:8000/api/teams', {
+  fetch('http://localhost:8000/api/courses/1/teams', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
@@ -72,14 +68,10 @@ function renderTeamsList(teams) {
       <div class="col-md-4 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">${team.name}</h5>
-            <p class="card-text">${team.description || 'No description provided.'}</p>
+            <h5 class="card-title">${team.GroupName}</h5>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
-            <button class="btn btn-sm btn-outline-secondary edit-team-btn" data-id="${team.id}">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger delete-team-btn" data-id="${team.id}">
+            <button class="btn btn-sm btn-outline-danger delete-team-btn" data-id="${team.GroupID}">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -95,35 +87,28 @@ function renderTeamsList(teams) {
  * Handle new team creation
  */
 function handleCreateTeam() {
-  if (!$('#new-team-form')[0].checkValidity()) {
-    $('#new-team-form')[0].reportValidity();
+  const courseId = $('#create-team-select-course').val();
+  const groupName = $('#team-name').val().trim();
+
+  if (!courseId || !groupName) {
+    Swal.fire('Error', 'All fields are required.', 'error');
     return;
   }
 
-  const newTeam = {
-    name: $('#team-name').val().trim(),
-    description: $('#team-description').val().trim(),
-  };
-
-  fetch('http://localhost:8000/api/teams', {
+  fetch(`http://localhost:8000/api/courses/${courseId}/teams`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
     },
-    body: JSON.stringify(newTeam),
+    body: JSON.stringify({ groupName }),
   })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to create team');
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       teamsList.push(data);
       renderTeamsList(teamsList);
 
-      Swal.fire('Success!', `Team "${data.name}" created.`, 'success');
+      Swal.fire('Success!', `Team "${data.GroupName}" created.`, 'success');
       $('#newTeamModal').modal('hide');
       $('#new-team-form')[0].reset();
     })
@@ -150,11 +135,8 @@ function handleDeleteTeam(teamId) {
           'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
         },
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to delete team');
-          }
-          teamsList = teamsList.filter(team => team.id !== teamId);
+        .then(() => {
+          teamsList = teamsList.filter(team => team.GroupID !== teamId);
           renderTeamsList(teamsList);
           Swal.fire('Deleted!', 'The team has been deleted.', 'success');
         })

@@ -1,20 +1,16 @@
+// REVIEWS.JS
 /**
  * Reviews management functionality
- * Handles creating, editing, managing, and completing peer reviews
  */
 
-// Global variables
 let reviewsList = [];
-let currentReview = null;
 
 $(document).ready(function () {
-  // Initialize the reviews module if the section exists
   if ($('#reviews-section').length) {
     loadReviewsList();
     setupReviewEventHandlers();
   }
 
-  // Handle modal action
   $('#save-new-review').on('click', handleCreateReview);
 });
 
@@ -72,14 +68,11 @@ function renderReviewsList(reviews) {
       <div class="col-md-4 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">${review.title}</h5>
-            <p class="card-text">${review.description || 'No description provided.'}</p>
+            <h5 class="card-title">${review.AssessmentType}</h5>
+            <p class="card-text">Start: ${review.StartDate}<br>End: ${review.EndDate}</p>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
-            <button class="btn btn-sm btn-outline-secondary edit-review-btn" data-id="${review.id}">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger delete-review-btn" data-id="${review.id}">
+            <button class="btn btn-sm btn-outline-danger delete-review-btn" data-id="${review.AssessmentID}">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -95,15 +88,16 @@ function renderReviewsList(reviews) {
  * Handle new review creation
  */
 function handleCreateReview() {
-  if (!$('#new-review-form')[0].checkValidity()) {
-    $('#new-review-form')[0].reportValidity();
+  const courseId = $('#create-review-select-course').val();
+  const groupId = $('#create-review-select-teams').val();
+  const assessmentType = $('#create-review-select-review').val();
+  const startDate = $('#dateReviewStart').val();
+  const endDate = $('#dateReviewEnd').val();
+
+  if (!courseId || !groupId || !assessmentType || !startDate || !endDate) {
+    Swal.fire('Error', 'All fields are required.', 'error');
     return;
   }
-
-  const newReview = {
-    title: $('#review-title').val().trim(),
-    description: $('#review-description').val().trim(),
-  };
 
   fetch('http://localhost:8000/api/reviews', {
     method: 'POST',
@@ -111,19 +105,14 @@ function handleCreateReview() {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
     },
-    body: JSON.stringify(newReview),
+    body: JSON.stringify({ courseId, groupId, assessmentType, startDate, endDate }),
   })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to create review');
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       reviewsList.push(data);
       renderReviewsList(reviewsList);
 
-      Swal.fire('Success!', `Review "${data.title}" created.`, 'success');
+      Swal.fire('Success!', `Review "${data.AssessmentType}" created.`, 'success');
       $('#newReviewModal').modal('hide');
       $('#new-review-form')[0].reset();
     })
@@ -150,11 +139,8 @@ function handleDeleteReview(reviewId) {
           'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
         },
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to delete review');
-          }
-          reviewsList = reviewsList.filter(review => review.id !== reviewId);
+        .then(() => {
+          reviewsList = reviewsList.filter(review => review.AssessmentID !== reviewId);
           renderReviewsList(reviewsList);
           Swal.fire('Deleted!', 'The review has been deleted.', 'success');
         })

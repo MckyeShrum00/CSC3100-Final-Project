@@ -1,19 +1,16 @@
-// File: js/courses.js
+// COURSES.JS
 /**
  * Course management functionality
- * Handles viewing, creating, editing, and managing courses
  */
 
 let coursesList = [];
 
 $(document).ready(function () {
-  // Initialize course module if the section exists
   if ($('#courses-section').length) {
     loadCoursesList();
     setupCourseEventHandlers();
   }
 
-  // Handle modal actions
   $('#save-new-course').on('click', handleCreateCourse);
 });
 
@@ -36,14 +33,7 @@ function loadCoursesList() {
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
     },
   })
-    .then(response => {
-      if (response.status === 401) {
-        // Redirect to login if token is invalid or expired
-        window.location.href = '../index.html';
-        return;
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       coursesList = data;
       renderCoursesList(coursesList);
@@ -78,15 +68,15 @@ function renderCoursesList(courses) {
       <div class="col-md-4 mb-4">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">${course.name}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">${course.code} - ${course.semester}</h6>
-            <p class="card-text">${course.description || 'No description provided.'}</p>
+            <h5 class="card-title">${course.CourseName}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${course.CourseCode} - ${course.Semester}</h6>
+            <p class="card-text">${course.Description || 'No description provided.'}</p>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
-            <button class="btn btn-sm btn-outline-secondary edit-course-btn" data-id="${course.id}">
+            <button class="btn btn-sm btn-outline-secondary edit-course-btn" data-id="${course.CourseID}">
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-sm btn-outline-danger delete-course-btn" data-id="${course.id}">
+            <button class="btn btn-sm btn-outline-danger delete-course-btn" data-id="${course.CourseID}">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -108,8 +98,8 @@ function handleCreateCourse() {
   }
 
   const newCourse = {
-    name: $('#course-name').val().trim(),
-    code: $('#course-code').val().trim(),
+    courseName: $('#course-name').val().trim(),
+    courseCode: $('#course-code').val().trim(),
     semester: $('#course-semester').val(),
     description: $('#course-description').val().trim(),
   };
@@ -122,21 +112,12 @@ function handleCreateCourse() {
     },
     body: JSON.stringify(newCourse),
   })
-    .then(response => {
-      if (response.status === 401) {
-        window.location.href = '../index.html';
-        return;
-      }
-      if (!response.ok) {
-        throw new Error('Failed to create course');
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       coursesList.push(data);
       renderCoursesList(coursesList);
 
-      Swal.fire('Success!', `Course "${data.name}" created.`, 'success');
+      Swal.fire('Success!', `Course "${data.CourseName}" created.`, 'success');
       $('#newCourseModal').modal('hide');
       $('#new-course-form')[0].reset();
     })
@@ -163,15 +144,9 @@ function handleDeleteCourse(courseId) {
           'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
         },
       })
-        .then(response => {
-          if (response.status === 401) {
-            window.location.href = '../index.html';
-            return;
-          }
-          if (!response.ok) {
-            throw new Error('Failed to delete course');
-          }
-          coursesList = coursesList.filter(course => course.id !== courseId);
+        .then(response => response.json())
+        .then(() => {
+          coursesList = coursesList.filter(course => course.CourseID !== courseId);
           renderCoursesList(coursesList);
           Swal.fire('Deleted!', 'The course has been deleted.', 'success');
         })
