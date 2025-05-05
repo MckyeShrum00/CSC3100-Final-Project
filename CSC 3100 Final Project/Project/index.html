@@ -8,6 +8,27 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-dark">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">SwollenHippo</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="index.html">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pages/landing.html">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="d-flex justify-content-center align-items-center vh-100 flex-column">
     <!-- Login Form -->
     <form class="card col-12 col-md-5 col-lg-4 mb-3" id="frmLogin" aria-label="Login Form">
@@ -85,7 +106,8 @@
           } else {
             Swal.fire({ title: 'Success', text: 'Login successful!', icon: 'success' }).then(() => {
               localStorage.setItem('auth_token', data.token)
-              
+
+              // Redirect based on userType
               if (data.user.userType === 'admin') {
                 window.location.href = '/CSC 3100 Final Project/Project/pages/admin-dashboard.html'
               } else if (data.user.userType === 'student') {
