@@ -8,6 +8,7 @@ const path = require('path');
 
 const app = express();
 const PORT = 8000;
+app.use(express.static(path.join(__dirname, '../CSC 3100 Final Project/Project')))
 const SECRET_KEY = 'your_secret_key';
 
 const dbSource = "SchoolSystem.sqlite"; // SQLite database file
