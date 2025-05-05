@@ -6,29 +6,28 @@ const jwt = require('jsonwebtoken')
 const sqlite3 = require('sqlite3').verbose()
 const path = require('path')
 
-
 const app = express()
 app.use(express.static(path.join(__dirname, '../CSC 3100 Final Project/Project')))
 const PORT = 8000
 const SECRET_KEY = 'your_secret_key'
 
-const dbSource = "SchoolSystem.sqlite"; // SQLite database file
+const dbSource = "SchoolSystem.sqlite" // SQLite database file
 const db = new sqlite3.Database(dbSource, (err) => {
     if (err) {
-        console.error("Error connecting to SQLite database:", err.message);
+        console.error("Error connecting to SQLite database:", err.message)
     } else {
-        console.log("Connected to SQLite database:", dbSource);
+        console.log("Connected to SQLite database:", dbSource)
 
         // Debug: List all tables in the database
         db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, tables) => {
             if (err) {
-                console.error("Error fetching tables:", err.message);
+                console.error("Error fetching tables:", err.message)
             } else {
-                console.log("Tables in database:", tables.map(table => table.name));
+                console.log("Tables in database:", tables.map(table => table.name))
             }
-        });
+        })
     }
-});
+})
 
 // Middleware
 app.use(cors())
