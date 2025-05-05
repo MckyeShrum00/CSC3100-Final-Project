@@ -70,7 +70,7 @@ function renderCoursesList(courses) {
         <div class="card h-100">
           <div class="card-body">
             <h5 class="card-title">${course.CourseName}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">${course.CourseCode} - ${course.CourseTerm}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">${course.CourseCode} - ${course.Semester}</h6>
             <p class="card-text">${course.Description || 'No description provided.'}</p>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
@@ -101,7 +101,7 @@ function handleCreateCourse() {
   const newCourse = {
     courseName: $('#course-name').val().trim(),
     courseCode: $('#course-code').val().trim(),
-    courseTerm: $('#course-semester').val(), 
+    Semester: $('#course-semester').val(), 
     description: $('#course-description').val().trim(),
   };
 
@@ -135,7 +135,7 @@ function handleEditCourse() {
   const updatedCourse = {
     courseName: $('#edit-course-name').val().trim(),
     courseCode: $('#edit-course-code').val().trim(),
-    courseTerm: $('#edit-course-semester').val(), 
+    Semester: $('#edit-course-semester').val(), 
     description: $('#edit-course-description').val().trim(),
   };
 
@@ -203,7 +203,7 @@ function setupCourseEventHandlers() {
       $('#edit-course-id').val(course.CourseID);
       $('#edit-course-name').val(course.CourseName);
       $('#edit-course-code').val(course.CourseCode);
-      $('#edit-course-semester').val(course.CourseTerm); 
+      $('#edit-course-semester').val(course.Semester); 
       $('#edit-course-description').val(course.Description);
 
       $('#editCourseModal').modal('show');
