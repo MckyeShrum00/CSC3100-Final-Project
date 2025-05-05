@@ -85,7 +85,14 @@
           } else {
             Swal.fire({ title: 'Success', text: 'Login successful!', icon: 'success' }).then(() => {
               localStorage.setItem('auth_token', data.token)
-              window.location.href = '/CSC 3100 Final Project/Project/pages/student-dashboard.html'
+              
+              if (data.user.userType === 'admin') {
+                window.location.href = '/CSC 3100 Final Project/Project/pages/admin-dashboard.html'
+              } else if (data.user.userType === 'student') {
+                window.location.href = '/CSC 3100 Final Project/Project/pages/student-dashboard.html'
+              } else {
+                Swal.fire({ title: 'Error', text: 'Unknown user type.', icon: 'error' })
+              }
             })
           }
         })
