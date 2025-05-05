@@ -45,17 +45,17 @@
             <a class="nav-link active" href="" aria-current="page">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="nav-courses">Review Feedback</a>
+            <a class="nav-link" href="#" id="nav-coursesStudent">Reviews</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#" id="nav-teams">Team Information</a>
+            <a class="nav-link" href="#" id="nav-teamsStudent">Team Information</a>
           </li>
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
-              <span id="user-name">Admin User</span>
+              <span id="user-name">Student User</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="#" id="nav-profile">Profile</a></li>
@@ -148,7 +148,7 @@
             </div>
           </div>
           <div class="card-footer text-end">
-            <a href="#" class="btn btn-sm btn-outline-primary">View All Reviews</a>
+            <a href="#" id="allReviewsStudent" class="btn btn-sm btn-outline-primary">View All Reviews</a>
           </div>
         </div>
       </div>
@@ -179,14 +179,14 @@
             </ul>
           </div>
           <div class="card-footer text-end">
-            <a href="#" class="btn btn-sm btn-outline-primary">View All Activity</a>
+            <a href="#" id="all" class="btn btn-sm btn-outline-primary">View All Activity</a>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Other sections (hidden by default) -->
-    <div id="courses" class="container-fluid mt-5 pt-3" style="display: none;">
+    <div id="studentCourses" class="container-fluid mt-5 pt-3" style="display: none;">
       <!-- Stats Summary Cards -->
       <div class="col-md-3 mb-4">
         <div class="card bg-primary text-white h-100">
@@ -250,6 +250,10 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <div id="studentActivity" class="container-fluid mt-5 pt-3" style="display: none;">
+      
     </div>
 
 
