@@ -26,6 +26,14 @@ const db = new sqlite3.Database(dbSource, (err) => {
                 console.log("Tables in database:", tables.map(table => table.name))
             }
         })
+
+        db.all("SELECT * FROM tblUsers", [], (err, users) => {
+            if (err) {
+                console.error("Error fetching users:", err.message)
+            } else {
+                console.log("Users in tblUsers table:", users)
+            }
+        })
     }
 });
 
