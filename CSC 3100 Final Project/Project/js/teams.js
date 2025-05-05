@@ -18,6 +18,18 @@ $(document).ready(function () {
  * Load teams list from the backend
  */
 function loadTeamsList() {
+  const courseId = $('#select-course').val(); // Assuming a dropdown exists to select a course
+
+  if (!courseId) {
+    $('#teams-section').html(`
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        Please select a course to view teams.
+      </div>
+    `);
+    return;
+  }
+
   $('#teams-section').html(`
     <div class="text-center my-5">
       <div class="spinner-border text-primary" role="status">
@@ -27,7 +39,7 @@ function loadTeamsList() {
     </div>
   `);
 
-  fetch('http://localhost:8000/api/courses/1/teams', {
+  fetch(`http://localhost:8000/api/courses/${courseId}/teams`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
@@ -147,8 +159,14 @@ function handleDeleteTeam(teamId) {
   });
 }
 
-// Attach delete event handler
-$(document).on('click', '.delete-team-btn', function () {
-  const teamId = $(this).data('id');
-  handleDeleteTeam(teamId);
-});
+// Attach event handlers for delete buttons
+function setupTeamEventHandlers() {
+  $(document).on('click', '.delete-team-btn', function () {
+    const teamId = $(this).data('id');
+    handleDeleteTeam(teamId);
+  });
+
+  $('#select-course').on('change', function () {
+    loadTeamsList();
+  });
+}

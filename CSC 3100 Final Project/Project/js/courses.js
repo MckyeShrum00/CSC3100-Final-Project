@@ -12,6 +12,7 @@ $(document).ready(function () {
   }
 
   $('#save-new-course').on('click', handleCreateCourse);
+  $('#save-edit-course').on('click', handleEditCourse);
 });
 
 /**
@@ -127,6 +128,42 @@ function handleCreateCourse() {
 }
 
 /**
+ * Handle course editing
+ */
+function handleEditCourse() {
+  const courseId = $('#edit-course-id').val();
+  const updatedCourse = {
+    courseName: $('#edit-course-name').val().trim(),
+    courseCode: $('#edit-course-code').val().trim(),
+    semester: $('#edit-course-semester').val(),
+    description: $('#edit-course-description').val().trim(),
+  };
+
+  fetch(`http://localhost:8000/api/courses/${courseId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+    body: JSON.stringify(updatedCourse),
+  })
+    .then(response => response.json())
+    .then(() => {
+      const index = coursesList.findIndex(course => course.CourseID === parseInt(courseId));
+      if (index !== -1) {
+        coursesList[index] = { ...coursesList[index], ...updatedCourse };
+        renderCoursesList(coursesList);
+      }
+
+      Swal.fire('Success!', 'Course updated successfully.', 'success');
+      $('#editCourseModal').modal('hide');
+    })
+    .catch(() => {
+      Swal.fire('Error', 'Failed to update course. Please try again.', 'error');
+    });
+}
+
+/**
  * Handle course deletion
  */
 function handleDeleteCourse(courseId) {
@@ -144,7 +181,6 @@ function handleDeleteCourse(courseId) {
           'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
         },
       })
-        .then(response => response.json())
         .then(() => {
           coursesList = coursesList.filter(course => course.CourseID !== courseId);
           renderCoursesList(coursesList);
@@ -157,8 +193,25 @@ function handleDeleteCourse(courseId) {
   });
 }
 
-// Attach delete event handler
-$(document).on('click', '.delete-course-btn', function () {
-  const courseId = $(this).data('id');
-  handleDeleteCourse(courseId);
-});
+// These attach event handlers
+function setupCourseEventHandlers() {
+  $(document).on('click', '.edit-course-btn', function () {
+    const courseId = $(this).data('id');
+    const course = coursesList.find(course => course.CourseID === courseId);
+
+    if (course) {
+      $('#edit-course-id').val(course.CourseID);
+      $('#edit-course-name').val(course.CourseName);
+      $('#edit-course-code').val(course.CourseCode);
+      $('#edit-course-semester').val(course.Semester);
+      $('#edit-course-description').val(course.Description);
+
+      $('#editCourseModal').modal('show');
+    }
+  });
+
+  $(document).on('click', '.delete-course-btn', function () {
+    const courseId = $(this).data('id');
+    handleDeleteCourse(courseId);
+  });
+}

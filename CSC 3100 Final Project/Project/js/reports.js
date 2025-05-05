@@ -5,24 +5,29 @@
 
 $(document).ready(function () {
   if ($('#reports-section').length) {
-    loadReports();
+    loadCourseReports();
+    setupReportEventHandlers();
   }
 });
 
 /**
- * Load reports from the backend
+ * Load summary stats for a course
  */
-function loadReports() {
+function loadCourseReports(courseId = null) {
   $('#reports-section').html(`
     <div class="text-center my-5">
       <div class="spinner-border text-info" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
-      <p class="mt-2">Generating reports...</p>
+      <p class="mt-2">Generating course reports...</p>
     </div>
   `);
 
-  fetch('http://localhost:8000/api/reports', {
+  const url = courseId
+    ? `http://localhost:8000/api/reports/${courseId}`
+    : `http://localhost:8000/api/reports`;
+
+  fetch(url, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
@@ -30,27 +35,27 @@ function loadReports() {
   })
     .then(response => response.json())
     .then(data => {
-      renderReportTable(data);
+      renderCourseReportTable(data);
     })
     .catch(() => {
       $('#reports-section').html(`
         <div class="alert alert-danger">
           <i class="bi bi-exclamation-triangle me-2"></i>
-          Failed to load reports. Please try again later.
+          Failed to load course reports. Please try again later.
         </div>
       `);
     });
 }
 
 /**
- * Render report data in a table
+ * Render course report data in a table
  */
-function renderReportTable(reports) {
+function renderCourseReportTable(reports) {
   if (!reports || reports.length === 0) {
     $('#reports-section').html(`
       <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
-        No reports available at the moment.
+        No course reports available at the moment.
       </div>
     `);
     return;
@@ -82,4 +87,101 @@ function renderReportTable(reports) {
   `;
 
   $('#reports-section').html(html);
+}
+
+/**
+ * Load detailed team report for a course and team
+ */
+function loadTeamReport(courseId, teamId) {
+  $('#team-report-section').html(`
+    <div class="text-center my-5">
+      <div class="spinner-border text-info" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Generating team report...</p>
+    </div>
+  `);
+
+  fetch(`http://localhost:8000/api/reports/${courseId}/team/${teamId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      renderTeamReportTable(data);
+    })
+    .catch(() => {
+      $('#team-report-section').html(`
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Failed to load team report. Please try again later.
+        </div>
+      `);
+    });
+}
+
+/**
+ * Render team report data in a table
+ */
+function renderTeamReportTable(report) {
+  if (!report || report.length === 0) {
+    $('#team-report-section').html(`
+      <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No team report available at the moment.
+      </div>
+    `);
+    return;
+  }
+
+  let html = `
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  report.forEach(item => {
+    html += `
+      <tr>
+        <td>${item.metric}</td>
+        <td>${item.value}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  $('#team-report-section').html(html);
+}
+
+/**
+ * Sets up event handlers for the reports dashboard
+ */
+function setupReportEventHandlers() {
+  // Load course report when a course is selected
+  $('#select-course').on('change', function () {
+    const courseId = $(this).val();
+    if (courseId) {
+      loadCourseReports(courseId);
+    }
+  });
+
+  // Load team report when a team is selected
+  $('#select-team').on('change', function () {
+    const courseId = $('#select-course').val();
+    const teamId = $(this).val();
+    if (courseId && teamId) {
+      loadTeamReport(courseId, teamId);
+    }
+  });
 }

@@ -12,12 +12,13 @@ $(document).ready(function () {
   }
 
   $('#save-new-review').on('click', handleCreateReview);
+  $('#save-edit-review').on('click', handleEditReview);
 });
 
 /**
  * Load reviews list from the backend
  */
-function loadReviewsList() {
+function loadReviewsList(courseId = null) {
   $('#reviews-section').html(`
     <div class="text-center my-5">
       <div class="spinner-border text-primary" role="status">
@@ -27,7 +28,11 @@ function loadReviewsList() {
     </div>
   `);
 
-  fetch('http://localhost:8000/api/reviews', {
+  const url = courseId
+    ? `http://localhost:8000/api/reviews?courseId=${courseId}`
+    : `http://localhost:8000/api/reviews`;
+
+  fetch(url, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
@@ -72,6 +77,9 @@ function renderReviewsList(reviews) {
             <p class="card-text">Start: ${review.StartDate}<br>End: ${review.EndDate}</p>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
+            <button class="btn btn-sm btn-outline-secondary edit-review-btn" data-id="${review.AssessmentID}">
+              <i class="bi bi-pencil"></i>
+            </button>
             <button class="btn btn-sm btn-outline-danger delete-review-btn" data-id="${review.AssessmentID}">
               <i class="bi bi-trash"></i>
             </button>
@@ -122,6 +130,43 @@ function handleCreateReview() {
 }
 
 /**
+ * Handle review editing
+ */
+function handleEditReview() {
+  const reviewId = $('#edit-review-id').val();
+  const updatedReview = {
+    courseId: $('#edit-review-select-course').val(),
+    groupId: $('#edit-review-select-teams').val(),
+    assessmentType: $('#edit-review-select-review').val(),
+    startDate: $('#edit-review-start-date').val(),
+    endDate: $('#edit-review-end-date').val(),
+  };
+
+  fetch(`http://localhost:8000/api/reviews/${reviewId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('swollenhippo_auth_token')}`,
+    },
+    body: JSON.stringify(updatedReview),
+  })
+    .then(response => response.json())
+    .then(() => {
+      const index = reviewsList.findIndex(review => review.AssessmentID === parseInt(reviewId));
+      if (index !== -1) {
+        reviewsList[index] = { ...reviewsList[index], ...updatedReview };
+        renderReviewsList(reviewsList);
+      }
+
+      Swal.fire('Success!', 'Review updated successfully.', 'success');
+      $('#editReviewModal').modal('hide');
+    })
+    .catch(() => {
+      Swal.fire('Error', 'Failed to update review. Please try again.', 'error');
+    });
+}
+
+/**
  * Handle review deletion
  */
 function handleDeleteReview(reviewId) {
@@ -151,8 +196,30 @@ function handleDeleteReview(reviewId) {
   });
 }
 
-// Attach delete event handler
-$(document).on('click', '.delete-review-btn', function () {
-  const reviewId = $(this).data('id');
-  handleDeleteReview(reviewId);
-});
+/**
+ * Sets up event handlers for the reviews dashboard
+ */
+function setupReviewEventHandlers() {
+  // Edit review handler
+  $(document).on('click', '.edit-review-btn', function () {
+    const reviewId = $(this).data('id');
+    const review = reviewsList.find(review => review.AssessmentID === reviewId);
+
+    if (review) {
+      $('#edit-review-id').val(review.AssessmentID);
+      $('#edit-review-select-course').val(review.CourseID);
+      $('#edit-review-select-teams').val(review.GroupID);
+      $('#edit-review-select-review').val(review.AssessmentType);
+      $('#edit-review-start-date').val(review.StartDate);
+      $('#edit-review-end-date').val(review.EndDate);
+
+      $('#editReviewModal').modal('show');
+    }
+  });
+
+  // Delete review handler
+  $(document).on('click', '.delete-review-btn', function () {
+    const reviewId = $(this).data('id');
+    handleDeleteReview(reviewId);
+  });
+}
