@@ -72,6 +72,9 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     // Toggle between Login and Registration forms
+    const eduEmailRegex = /^[^@]+@[^@]+\.[eE][dD][uU]$/
+    const nistPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()[\]{}<>\-_=+|/~])[A-Za-z\d@$!%*?&#^()[\]{}<>\-_=+|/~]{8,}$/
+
     $('#showRegisterForm').on('click', function (e) {
       e.preventDefault()
       $('#frmLogin').hide()
@@ -84,7 +87,6 @@
       $('#frmLogin').show()
     })
 
-    // Login
     $('#btnLogin').on('click', function () {
       const email = $('#txtUsername').val().trim()
       const password = $('#txtPassword').val().trim()
@@ -107,7 +109,6 @@
             Swal.fire({ title: 'Success', text: 'Login successful!', icon: 'success' }).then(() => {
               localStorage.setItem('auth_token', data.token)
 
-              // Redirect based on userType
               if (data.user.userType === 'admin') {
                 window.location.href = '/CSC 3100 Final Project/Project/pages/admin-dashboard.html'
               } else if (data.user.userType === 'student') {
@@ -123,16 +124,33 @@
         })
     })
 
-    // Registration
     $('#btnRegistrationStudent').on('click', function () {
       const firstName = $('#txtFNameStudent').val().trim()
       const lastName = $('#txtLNameStudent').val().trim()
       const email = $('#txtRegEmailStudent').val().trim()
       const password = $('#txtRegPasswordStudent').val().trim()
-      const userType = $('#userType').val() // Get the selected user type
+      const userType = $('#userType').val()
 
-      if (!firstName || !lastName || !email || !password) {
-        Swal.fire({ title: 'Error', text: 'All fields are required.', icon: 'error' })
+      let message = ''
+
+      if (firstName.length < 1) {
+        message += '<p>First name must be at least 1 character.</p>'
+      }
+
+      if (lastName.length < 1) {
+        message += '<p>Last name must be at least 1 character.</p>'
+      }
+
+      if (!eduEmailRegex.test(email)) {
+        message += '<p>Email must be a valid .edu address.</p>'
+      }
+
+      if (!nistPasswordRegex.test(password)) {
+        message += '<p>Password must be at least 8 characters and include uppercase, lowercase, number, and special character.</p>'
+      }
+
+      if (message) {
+        Swal.fire({ title: 'Fix these issues:', html: message, icon: 'error' })
         return
       }
 
@@ -147,6 +165,56 @@
             Swal.fire({ title: 'Error', text: data.error, icon: 'error' })
           } else {
             Swal.fire({ title: 'Success', text: 'Registration successful!', icon: 'success' }).then(() => {
+              window.location.href = '/CSC 3100 Final Project/Project/index.html'
+            })
+          }
+        })
+        .catch(() => {
+          Swal.fire({ title: 'Error', text: 'Registration failed. Please try again.', icon: 'error' })
+        })
+    })
+
+    $('#btnRegistrationAdmin').on('click', function () {
+      const firstName = $('#txtFNameAdmin').val().trim()
+      const lastName = $('#txtLNameAdmin').val().trim()
+      const email = $('#txtRegEmailAdmin').val().trim()
+      const password = $('#txtRegPasswordAdmin').val().trim()
+      const userType = 'admin'
+
+      let message = ''
+
+      if (firstName.length < 1) {
+        message += '<p>First name must be at least 1 character.</p>'
+      }
+
+      if (lastName.length < 1) {
+        message += '<p>Last name must be at least 1 character.</p>'
+      }
+
+      if (!eduEmailRegex.test(email)) {
+        message += '<p>Email must be a valid .edu address.</p>'
+      }
+
+      if (!nistPasswordRegex.test(password)) {
+        message += '<p>Password must be at least 8 characters and include uppercase, lowercase, number, and special character.</p>'
+      }
+
+      if (message) {
+        Swal.fire({ title: 'Fix these issues:', html: message, icon: 'error' })
+        return
+      }
+
+      fetch('http://localhost:8000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName, lastName, email, password, userType }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            Swal.fire({ title: 'Error', text: data.error, icon: 'error' })
+          } else {
+            Swal.fire({ title: 'Success', text: 'Admin registration successful!', icon: 'success' }).then(() => {
               window.location.href = '/CSC 3100 Final Project/Project/index.html'
             })
           }
