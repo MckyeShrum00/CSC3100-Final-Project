@@ -13,9 +13,18 @@ const SECRET_KEY = 'your_secret_key';
 const dbSource = "SchoolSystem.sqlite"; // SQLite database file
 const db = new sqlite3.Database(dbSource, (err) => {
     if (err) {
-        console.error("Error connecting to SQLite database:", err.message);
+        console.error("Error connecting to SQLite database:", err.message)
     } else {
-        console.log("Connected to SQLite database:", dbSource);
+        console.log("Connected to SQLite database:", dbSource)
+
+        // Debug: List all tables in the database
+        db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, tables) => {
+            if (err) {
+                console.error("Error fetching tables:", err.message)
+            } else {
+                console.log("Tables in database:", tables.map(table => table.name))
+            }
+        })
     }
 });
 
