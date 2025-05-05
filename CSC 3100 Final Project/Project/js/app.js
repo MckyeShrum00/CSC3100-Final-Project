@@ -15,10 +15,25 @@ $(document).ready(function () {
     $('#btn-add-students').on('click', () => $('#addStudentsModal').modal('show'));
     $('#btn-create-team').on('click', () => $('#createTeamModal').modal('show'));
     $('#btn-create-review').on('click', () => $('#createReviewModal').modal('show'));
-    $('#nav-courses').on('click', () => $('#courses').show());
-    $('#nav-teams').on('click', () => $('#teams').show());
-    $('#nav-reports').on('click', () => $('#studentReports').show());
-    $('#nav-teams').on('click', () => $('#studentTeams').show());
+    $('#nav-courses').on('click', () =>  {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#courses').show()});
+    $('#nav-teams').on('click', () =>  {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#teams').show()});
+    $('#nav-reviews').on('click', () =>  {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#reviews').show()});
+    $('#nav-reports').on('click', () =>  {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#reports-section').show()});
+    
+    
+    $('#btnCourses').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#courses').show()});
+    $('#btnStudents').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #studentTeams, #studentCourses').hide(); $('#courses').show()});
+    $('#btnTeams').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#teams').show()});
+    $('#btnReviews').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#reviews').show()});
+    $('#allReviews').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#reviews').show()});
+    
+    $('#nav-coursesStudent').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#studentCourses').show()});
+    $('#nav-teamsStudent').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#studentTeams').show()});
+    $('#allReviewsStudent').on('click', () => {$('#dashboard-section, #courses, #teams, #reports-section, #profile-section, #settings-section, #reviews, #studentTeams, #studentCourses').hide(); $('#studentCourses').show()});
+    
+    
+      
+    
     
     const user = getCurrentUser();
     if (user) {
@@ -33,6 +48,8 @@ $(document).ready(function () {
     const navIds = [
       { id: 'nav-courses', section: 'courses' },
       { id: 'nav-teams', section: 'teams' },
+      { id: 'nav-teamsStudent', section: 'teamsStudent' },
+      { id: 'nav-coursesStudent', section: 'coursesStudent' },
       { id: 'nav-reviews', section: 'reviews' },
       { id: 'nav-reports', section: 'reports' },
       { id: 'nav-profile', section: 'profile' },
