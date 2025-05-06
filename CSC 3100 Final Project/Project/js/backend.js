@@ -307,6 +307,53 @@ app.get('/api/reports/:courseId/team/:teamId', verifyToken, (req, res) => {
     });
 });
 
+// --- Assessment Responses Endpoints ---
+app.post('/api/assessments/:assessmentId/responses', verifyToken, (req, res) => {
+    const { assessmentId } = req.params;
+    const { responses } = req.body;
+
+    if (!Array.isArray(responses) || responses.length === 0) {
+        return res.status(400).json({ error: 'No responses provided.' });
+    }
+
+    const insertQuery = `
+        INSERT INTO tblAssessmentResponses (AssessmentID, ReviewerID, RevieweeID, QuestionID, ResponseText)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const stmt = db.prepare(insertQuery);
+
+    db.serialize(() => {
+        for (const r of responses) {
+            stmt.run([
+                assessmentId,
+                r.reviewerId,
+                r.revieweeId,
+                r.questionId,
+                r.responseText
+            ]);
+        }
+
+        stmt.finalize(err => {
+            if (err) return res.status(500).json({ error: 'Failed to save responses.' });
+            res.status(201).json({ message: 'Responses submitted successfully.' });
+        });
+    });
+});
+
+app.get('/api/assessments/:assessmentId/responses', verifyToken, (req, res) => {
+    const { assessmentId } = req.params;
+    const query = `
+        SELECT * FROM tblAssessmentResponses
+        WHERE AssessmentID = ?
+    `;
+
+    db.all(query, [assessmentId], (err, rows) => {
+        if (err) return res.status(500).json({ error: 'Failed to fetch responses.' });
+        res.status(200).json(rows);
+    });
+});
+
 // Default Route
 app.get('/', (req, res) => {
     res.status(200).json({ message: 'Backend is running!' });
