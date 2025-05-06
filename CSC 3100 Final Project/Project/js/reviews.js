@@ -16,7 +16,7 @@ $(document).ready(function () {
 });
 
 function initializeReviewsModule() {
-  if ($('#reviews-container').length) loadReviewsList();
+  if ($('#reviews').length) loadReviewsList();
   if ($('#pending-reviews-container').length) loadPendingReviews();
   if ($('#completed-reviews-container').length) loadCompletedReviews();
 }

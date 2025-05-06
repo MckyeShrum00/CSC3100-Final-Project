@@ -20,9 +20,10 @@ $(document).ready(function() {
  */
 function initializeTeamsModule() {
   // Check if we're on the teams page
-  if ($('#teams-container').length) {
+  if ($('#teams').length) {
     loadTeamsList();
   }
+  console.log('test')
   
   // Initialize select2 for better dropdown UX if available
   if ($.fn.select2) {
@@ -92,7 +93,7 @@ function setupTeamsEventHandlers() {
 function loadTeamsList() {
   
   // Show loading state
-  $('#teams-container').html('<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading teams...</p></div>');
+  $('#teams').html('<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading teams...</p></div>');
   
   setTimeout(() => {
     // teams data
@@ -149,7 +150,7 @@ function loadTeamsList() {
  */
 function renderTeamsList(teams) {
   if (!teams || teams.length === 0) {
-    $('#teams-container').html(`
+    $('#teams').html(`
       <div class="alert alert-info" role="alert">
         <i class="bi bi-info-circle me-2"></i>
         No teams have been created yet. Click the "Create Team" button to get started.
@@ -228,7 +229,7 @@ function renderTeamsList(teams) {
     `;
   });
   
-  $('#teams-container').html(html);
+  $('#teams').html(html);
 }
 
 /**

@@ -5,7 +5,7 @@
  */
 
 $(document).ready(function () {
-    if ($('#reports-section').length) {
+    if ($('#reports').length) {
       loadReports();
     }
   });
@@ -14,7 +14,7 @@ $(document).ready(function () {
    * Simulates report generation
    */
   function loadReports() {
-    $('#reports-section').html(`
+    $('#reports').html(`
       <div class="text-center my-5">
         <div class="spinner-border text-info" role="status">
           <span class="visually-hidden">Loading...</span>
@@ -101,7 +101,7 @@ $(document).ready(function () {
       </div>
     `;
   
-    $('#reports-section').html(html);
+    $('#reports').html(html);
   
     // Export handler
     $('#export-report').on('click', () => {

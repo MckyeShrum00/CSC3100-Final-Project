@@ -28,6 +28,8 @@
 <script src="../js/reviews.js"></script>
 <script src="../js/courses.js"></script>
 <script src="../js/auth.js"></script>
+<script src="../js/teams.js"></script>
+<script src="../js/reports.js"></script>
 
 
 <body>
@@ -305,30 +307,19 @@
     </div>
 
     <div id="teams" class="container-fluid mt-5 pt-3" style="display: none;">
-      <div class="mb-3">
-        <label for="select-course" class="form-label">Select Course</label>
-        <select class="form-select" id="select-course" required>
-          <option value="">Select a course</option>
-          <option value="CS 101">CS 101: Introduction to Computer Science</option>
-          <option value="SE 210">SE 210: Software Engineering</option>
-          <option value="DB 305">DB 305: Database Systems# SwollenHippo - Complete Front-End Implementation</option>
-        </select>
-      </div>
+      <!-- Teams -->
     </div>
 
     <div id="reviews" class="container-fluid mt-5 pt-3" style="display: none;">
-      <div class="mb-3">
-        <label for="select-course" class="form-label">Select Course</label>
-        <select class="form-select" id="select-course" required>
-          <option value="">Select a course</option>
-          <option value="CS 101">CS 101: Introduction to Computer Science</option>
-          <option value="SE 210">SE 210: Software Engineering</option>
-          <option value="DB 305">DB 305: Database Systems# SwollenHippo - Complete Front-End Implementation</option>
-        </select>
+      <div id="pending-reviews-container" class="container-fluid mt-5 pt-3">
+        <!-- Stats Summary Cards -->
+      </div>
+      <div id="completed-reviews-container" class="container-fluid mt-5 pt-3">
+        <!-- Stats Summary Cards -->
       </div>
     </div>
 
-    <div id="reports-section" class="row" style="display: none;">
+    <div id="reports" class="row" style="display: none;">
       
       <!-- Reports content will be loaded here -->
     </div>
