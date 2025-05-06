@@ -9,10 +9,10 @@ let instructorCourses = [];
 $(document).ready(function () {
   const currentUser = getCurrentUser();
 
-  if (currentUser && currentUser.userType === 'instructor') {
+  if (currentUser && currentUser.userType === 'admin') {
     $('#user-name').text(`${currentUser.firstName} ${currentUser.lastName}`);
     initializeInstructorDashboard();
-  } else if (currentUser && currentUser.userType !== 'instructor') {
+  } else if (currentUser && currentUser.userType !== 'admin') {
     // Redirect others (e.g., student/admin)
     window.location.href = 'student-dashboard.html';
   }
@@ -30,7 +30,7 @@ function initializeInstructorDashboard() {
  * Load courses assigned to the instructor (simulated fetch)
  */
 function loadInstructorCourses() {
-  $('#dashboard-section').html(`
+  $('#courses').html(`
     <div class="text-center my-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -79,7 +79,7 @@ function renderInstructorCourses(courses) {
   });
   html += '</div>';
 
-  $('#dashboard-section').html(html);
+  $('#courses').html(html);
 }
 
 /**
@@ -108,3 +108,4 @@ function setupInstructorEventHandlers() {
     });
   });
 }
+

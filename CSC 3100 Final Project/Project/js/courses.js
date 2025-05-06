@@ -6,7 +6,7 @@
 let coursesList = [];
 
 $(document).ready(function () {
-  if ($('#courses-section').length) {
+  if ($('#courses').length) {
     loadCoursesList();
     setupCourseEventHandlers();
   }
@@ -19,7 +19,7 @@ $(document).ready(function () {
  * Load courses list from the backend
  */
 function loadCoursesList() {
-  $('#courses-section').html(`
+  $('#courses').html(`
     <div class="text-center my-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -56,7 +56,7 @@ function loadCoursesList() {
  */
 function renderCoursesList(courses) {
   if (!courses || courses.length === 0) {
-    $('#courses-section').html(`
+    $('#courses').html(`
       <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
         No courses found. Use the "Create New Course" button to add one.
@@ -88,7 +88,7 @@ function renderCoursesList(courses) {
     `;
   });
   html += '</div>';
-  $('#courses-section').html(html);
+  $('#courses').html(html);
 }
 
 /**
